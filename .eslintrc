@@ -1,0 +1,29 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "@typescript-eslint",
+        "prettier",
+        "jest",
+        "import"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier",
+        "airbnb-typescript/base"
+    ],
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
+    "rules": {
+        "no-console": 1,
+        "prettier/prettier": 2,
+        "@typescript-eslint/ban-ts-comment": "off"
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "jest/globals": true
+    }
+}
