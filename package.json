@@ -1,7 +1,7 @@
 {
-  "name": "artemis_api",
+  "name": "eve-equinox-api",
   "version": "0.0.1",
-  "description": "Artemis API NodeJS server",
+  "description": "eve-equinox-api server",
   "main": "dist/server.js",
   "source": "src/server.ts",
   "targets": {
@@ -14,7 +14,7 @@
     "start:prod": "npm run build && node dist/server.js",
     "start:dev": "npx nodemon",
     "start": "npm run start:dev",
-    "build": "parcel build src/server.ts",
+    "build": "npm rebuild && parcel build src/server.ts",
     "lint": "eslint . --ext .ts",
     "format": "eslint . --ext .ts --fix",
     "prettier-format": "run-script-os",
