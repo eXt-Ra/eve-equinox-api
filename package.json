@@ -14,7 +14,7 @@
     "start:prod": "npm run build && node dist/server.js",
     "start:dev": "npx nodemon",
     "start": "npm run start:dev",
-    "build": "parcel build src/server.ts",
+    "build": "npm rebuild && parcel build src/server.ts",
     "lint": "eslint . --ext .ts",
     "format": "eslint . --ext .ts --fix",
     "prettier-format": "run-script-os",
