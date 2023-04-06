@@ -6,7 +6,7 @@ COPY package*.json ./
 
 RUN npm install
 COPY . .
-RUn npm rebuild
+RUN npm rebuild
 RUN npm run build
 
 EXPOSE 8000

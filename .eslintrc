@@ -10,6 +10,7 @@
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
+        "plugin:import/typescript",
         "prettier",
         "airbnb-typescript/base"
     ],
@@ -19,7 +20,8 @@
     "rules": {
         "no-console": 1,
         "prettier/prettier": 2,
-        "@typescript-eslint/ban-ts-comment": "off"
+        "@typescript-eslint/ban-ts-comment": "off",
+        "import/no-extraneous-dependencies": "off"
     },
     "env": {
         "browser": true,
