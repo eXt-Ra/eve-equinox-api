@@ -1,4 +1,4 @@
-export interface EsiProfile {
+export interface EsiProfile extends Express.User {
   CharacterID: number;
   CharacterName: string;
   accessToken: string;
