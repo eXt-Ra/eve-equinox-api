@@ -9,7 +9,7 @@ import config from './config';
 import setupPassport from './passportSetup';
 import errorHandler from './middlewares/errorHandler';
 import fourOhFour from './middlewares/fourOhFour';
-// import { redisClient } from './middlewares/redisClient';
+import { redisClient } from './middlewares/redisClient';
 
 import root from './routes/root';
 import auth from './routes/auth';
@@ -24,17 +24,27 @@ app.use(
   cors({
     // @ts-ignore
     origin: config.clientOrigins[config.nodeEnv],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
   }),
 );
+app.use(function (req, res, next) {
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 app.use(helmet());
 app.use(morgan('tiny'));
 
 app.use(
   session({
-    // store: new RedisStore({ client: redisClient }),
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET || 'default',
     resave: false,
     saveUninitialized: true,
+    name: 'eve-equinox-session'
   }),
 );
 

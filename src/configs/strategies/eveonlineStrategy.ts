@@ -3,15 +3,13 @@ import refresh from 'passport-oauth2-refresh';
 import axios from 'axios';
 import { PassportStatic } from 'passport';
 import { EsiProfile } from '../../interfaces/EsiProfile';
-import { generateState } from '../../utils/generateState';
 
 export function setupEveOnlineStrategy(passport: PassportStatic) {
-  const state = generateState();
 
   const eveonlineStrategy = new OAuth2Strategy(
     {
-      authorizationURL: 'https://login.eveonline.com/v2/oauth/authorize?state=' + state,
-      tokenURL: 'https://login.eveonline.com/v2/oauth/token?state=' + state,
+      authorizationURL: 'https://login.eveonline.com/v2/oauth/authorize',
+      tokenURL: 'https://login.eveonline.com/v2/oauth/token',
       clientID: process.env.EVE_CLIENT_ID || '',
       clientSecret: process.env.EVE_CLIENT_SECRET || '',
       callbackURL: process.env.EVE_CALLBACK_URL || '',
