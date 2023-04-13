@@ -5,7 +5,8 @@ const router = express.Router();
 router.get('/', (req: Request, res: Response) => {
   req.logout({}, () => {
     req.session.destroy(() => {
-      res.clearCookie('connect.sid');
+      res.clearCookie('eve-equinox-session');
+      res.clearCookie('eve-equinox-isConnected');
       res.redirect('/');
     });
   });
