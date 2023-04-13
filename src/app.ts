@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import RedisStore from 'connect-redis';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -21,6 +22,7 @@ export const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
   cors({
     // @ts-ignore
@@ -63,3 +65,4 @@ app.use(fourOhFour);
 app.use(errorHandler);
 
 export default app;
+

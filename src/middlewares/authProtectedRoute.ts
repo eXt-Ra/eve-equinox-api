@@ -4,7 +4,8 @@ function authProtectedRoute(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
     next();
   } else {
-    res.redirect('/auth/eveonline/login');
+    // res.redirect('/auth/eveonline/login');
+    res.sendStatus(401);
   }
 }
 

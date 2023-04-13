@@ -31,6 +31,7 @@ router.get('/callback', passport.authenticate('eveonline', { keepSessionInfo: tr
 
     const redirectURL = baseURL[process.env.NODE_ENV as keyof typeof baseURL] + returnTo;
 
+    res.cookie('eve-equinox-isConnected', true, { maxAge: 900000, httpOnly: true });
     return res.redirect(redirectURL);
   }
 
