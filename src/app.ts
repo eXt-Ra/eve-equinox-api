@@ -14,6 +14,7 @@ import { redisClient } from './middlewares/redisClient';
 import root from './routes/root';
 import auth from './routes/auth';
 import me from './routes/me';
+import profile from './routes/profile';
 import logout from './routes/logout';
 
 export const app = express();
@@ -55,6 +56,7 @@ app.use('/', root);
 app.use('/auth', auth);
 app.use('/logout', logout);
 app.use('/me', me);
+app.use('/profile', profile);
 
 // Apply error handling last
 app.use(fourOhFour);
