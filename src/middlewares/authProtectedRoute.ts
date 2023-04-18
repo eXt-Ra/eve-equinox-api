@@ -4,7 +4,7 @@ function authProtectedRoute(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
     next();
   } else {
-    // res.redirect('/auth/eveonline/login');
+    res.cookie('eve-equinox-isConnected', false, { httpOnly: true });
     res.sendStatus(401);
   }
 }

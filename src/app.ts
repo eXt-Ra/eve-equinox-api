@@ -16,7 +16,9 @@ import root from './routes/root';
 import auth from './routes/auth';
 import me from './routes/me';
 import profile from './routes/profile';
+import character from './routes/character';
 import logout from './routes/logout';
+import authProtectedRoute from './middlewares/authProtectedRoute';
 
 export const app = express();
 
@@ -57,8 +59,9 @@ setupPassport(app);
 app.use('/', root);
 app.use('/auth', auth);
 app.use('/logout', logout);
-app.use('/me', me);
-app.use('/profile', profile);
+app.use('/me', authProtectedRoute, me);
+app.use('/profile', authProtectedRoute, profile);
+app.use('/character', authProtectedRoute, character);
 
 // Apply error handling last
 app.use(fourOhFour);

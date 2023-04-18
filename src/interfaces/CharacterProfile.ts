@@ -1,3 +1,5 @@
+import { PortraitUrls } from "./PortraitUrls";
+
 export interface CharacterProfile {
   birthday: string;
   bloodline_id: number;
@@ -7,4 +9,5 @@ export interface CharacterProfile {
   name: string;
   race_id: number;
   title: string;
+  portraitUrls: PortraitUrls;
 }

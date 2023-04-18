@@ -1,10 +1,9 @@
 import express from 'express';
-import authProtectedRoute from '../../middlewares/authProtectedRoute';
 import { getProfile } from '../../controllers/profile/getProfile';
 
 const router = express.Router();
 
-router.get('/', authProtectedRoute, getProfile());
+router.get('/', getProfile);
 
 export default router;
 
