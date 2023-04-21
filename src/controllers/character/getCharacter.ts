@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import { CharacterProfile } from "../../interfaces/CharacterProfile";
 import { EsiProfile } from "../../interfaces/EsiProfile";
 import { PortraitUrls } from "../../interfaces/PortraitUrls";
-import { Profile } from "../../interfaces/Profile";
 
 export const getCharacter = async (req: Request, res: Response) => {
   const characterId = req.params.id;
@@ -28,9 +27,5 @@ export const getCharacter = async (req: Request, res: Response) => {
     ),
   ]);
 
-  const profile: Profile = {
-    characterProfiles: [{ ...characterResponse.data, portraitUrls: portraitResponse.data }],
-  };
-
-  return res.json(profile);
+  return res.json({ ...characterResponse.data, id: characterId, portraitUrls: portraitResponse.data });
 };

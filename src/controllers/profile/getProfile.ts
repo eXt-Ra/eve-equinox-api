@@ -28,7 +28,7 @@ export const getProfile = async (req: Request, res: Response) => {
   ]);
 
   const profile: Profile = {
-    characterProfiles: [{ ...characterResponse.data, portraitUrls: portraitResponse.data }],
+    characterProfiles: [{ ...characterResponse.data, id: user?.CharacterID ? user?.CharacterID : 1, portraitUrls: portraitResponse.data }],
   };
 
   return res.json(profile);
