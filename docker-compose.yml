@@ -9,9 +9,41 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - POSTGRES_HOST=eve-equinox-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     restart: always
-  redis:
+    depends_on:
+      - eve-equinox-redis
+      - eve-equinox-postgres
+
+  eve-equinox-redis:
     image: redis
     ports:
       - 6379:6379
     restart: always
+
+  eve-equinox-postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    restart: always
+    volumes:
+      - eve-equinox-postgres-data:/var/lib/postgresql/data
+
+  eve-equinox-adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    restart: always
+    depends_on:
+      - eve-equinox-postgres
+
+volumes:
+  eve-equinox-postgres-data:
