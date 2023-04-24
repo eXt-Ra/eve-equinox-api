@@ -19,6 +19,7 @@ import profile from './routes/profile';
 import character from './routes/character';
 import logout from './routes/logout';
 import authProtectedRoute from './middlewares/authProtectedRoute';
+import { setupSequelize } from './sequelize';
 
 export const app = express();
 
@@ -52,7 +53,7 @@ app.use(
     name: 'eve-equinox-session'
   }),
 );
-
+setupSequelize();
 setupPassport(app);
 
 // Apply routes before error handling

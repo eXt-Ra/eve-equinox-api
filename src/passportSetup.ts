@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { setupEveOnlineStrategy } from './configs/strategies/eveonlineStrategy';
-import { EsiProfile } from './interfaces/EsiProfile';
 import { Express } from 'express-serve-static-core';
+import { User } from './interfaces/User';
 
 function setupPassport(app: Express) {
   app.use(passport.initialize());
@@ -9,7 +9,7 @@ function setupPassport(app: Express) {
   passport.serializeUser((user, done) => {
     done(null, user);
   });
-  passport.deserializeUser((user: EsiProfile, done) => {
+  passport.deserializeUser((user: User, done) => {
     done(null, user);
   });
   setupEveOnlineStrategy(passport);

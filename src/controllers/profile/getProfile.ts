@@ -1,34 +1,51 @@
 import { Request, Response } from 'express';
-import { EsiProfile } from '../../interfaces/EsiProfile';
 import axios from 'axios';
 import { CharacterProfile } from '../../interfaces/CharacterProfile';
 import { PortraitUrls } from '../../interfaces/PortraitUrls';
 import { Profile } from '../../interfaces/Profile';
+import { User } from '../../interfaces/User';
+import { getMainCharacterProfile } from '../../utils/getMainCharacterProfile';
+import { EsiProfile } from '../../interfaces/EsiProfile';
 
 export const getProfile = async (req: Request, res: Response) => {
-  const user: EsiProfile | undefined = req.session.passport?.user;
+  const user: User | undefined = req.session.passport?.user;
 
-  const [characterResponse, portraitResponse] = await Promise.all([
-    axios.get<CharacterProfile>(
-      `https://esi.evetech.net/latest/characters/${user?.CharacterID}?datasource=tranquility`,
+  if (!user) return res.status(401).json({ message: "User not authenticated" });
+
+  const mCharProfile = getMainCharacterProfile(user.characters, user.mainCharacterId);
+
+  const characterProfilesPromises = user.characters.map(async (character: EsiProfile) => {
+    const characterProfilePromise = axios.get<CharacterProfile>(
+      `https://esi.evetech.net/latest/characters/${character.CharacterID}?datasource=tranquility`,
       {
         headers: {
-          Authorization: `Bearer ${user?.accessToken}`,
+          Authorization: `Bearer ${mCharProfile?.accessToken}`,
         },
       }
-    ),
-    axios.get<PortraitUrls>(
-      `https://esi.evetech.net/latest/characters/${user?.CharacterID}/portrait?datasource=tranquility`,
+    );
+
+    const portraitPromise = axios.get<PortraitUrls>(
+      `https://esi.evetech.net/latest/characters/${character.CharacterID}/portrait?datasource=tranquility`,
       {
         headers: {
-          Authorization: `Bearer ${user?.accessToken}`,
+          Authorization: `Bearer ${mCharProfile?.accessToken}`,
         },
       }
-    ),
-  ]);
+    );
+
+    const [characterProfileResponse, portraitResponse] = await Promise.all([characterProfilePromise, portraitPromise]);
+
+    return {
+      ...characterProfileResponse.data,
+      id: character.CharacterID,
+      portraitUrls: portraitResponse.data,
+    };
+  });
+
+  const characterProfiles = await Promise.all(characterProfilesPromises);
 
   const profile: Profile = {
-    characterProfiles: [{ ...characterResponse.data, id: user?.CharacterID ? user?.CharacterID : 1, portraitUrls: portraitResponse.data }],
+    characterProfiles: characterProfiles,
   };
 
   return res.json(profile);

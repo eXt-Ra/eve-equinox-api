@@ -1,21 +1,26 @@
 import axios, { AxiosError } from "axios";
 import { Request, Response } from "express";
-import { EsiProfile } from "../../interfaces/EsiProfile";
 import { CharacterProfile } from "../../interfaces/CharacterProfile";
+import { User } from "../../interfaces/User";
+import { getMainCharacterProfile } from "../../utils/getMainCharacterProfile";
 
 interface CharacterList {
   character: number[];
 }
 
 export const searchCharacter = async (req: Request, res: Response) => {
-  const user: EsiProfile | undefined = req.session.passport?.user;
+  const user: User | undefined = req.session.passport?.user;
+
+  if (!user) return res.status(401).json({ message: "User not authenticated" });
+
+  const mCharProfile = getMainCharacterProfile(user.characters, user.mainCharacterId);
 
   try {
     const characterListResponse = await axios.get<CharacterList>(
-      `https://esi.evetech.net/latest/characters/${user?.CharacterID}/search/?categories=character&datasource=tranquility&language=en&search=${req.params.search}&strict=false`,
+      `https://esi.evetech.net/latest/characters/${mCharProfile?.CharacterID}/search/?categories=character&datasource=tranquility&language=en&search=${req.params.search}&strict=false`,
       {
         headers: {
-          Authorization: `Bearer ${user?.accessToken}`,
+          Authorization: `Bearer ${mCharProfile?.accessToken}`,
         },
       }
     );
@@ -27,7 +32,7 @@ export const searchCharacter = async (req: Request, res: Response) => {
             `https://esi.evetech.net/latest/characters/${characterID}?datasource=tranquility`,
             {
               headers: {
-                Authorization: `Bearer ${user?.accessToken}`,
+                Authorization: `Bearer ${mCharProfile?.accessToken}`,
               },
             }
           );
@@ -45,7 +50,6 @@ export const searchCharacter = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "No characters found" });
     }
   } catch (error: unknown) {
-    console.log('error: ', error);
     // Check if error is of type AxiosError
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;

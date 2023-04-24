@@ -30,7 +30,8 @@
     "test:coverage": "jest --verbose -w 5 --coverage",
     "prepare": "npx husky install",
     "bundle-analyzer": "parcel build src/server.ts --reporter @parcel/reporter-bundle-analyzer",
-    "start:redis": "docker-compose up -d redis"
+    "start:redis": "docker-compose up -d redis",
+    "migrate": "sequelize-cli db:migrate --config=src/config/sequelize-cli.js"
   },
   "husky": {
     "hooks": {
@@ -53,6 +54,7 @@
     "@types/passport": "^1.0.12",
     "@types/passport-oauth2": "^1.4.12",
     "@types/passport-oauth2-refresh": "^1.1.1",
+    "@types/sequelize": "^4.28.14",
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
@@ -71,6 +73,8 @@
     "process": "^0.11.10",
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
+    "sequelize-cli": "^6.6.0",
+    "sequelize-typescript-cli": "^1.1.0",
     "stream-http": "^3.1.0",
     "supertest": "^6.3.3",
     "ts-jest": "^29.0.5",
@@ -94,6 +98,11 @@
     "passport-http-header-strategy": "^1.1.0",
     "passport-oauth2": "^1.7.0",
     "passport-oauth2-refresh": "^2.1.0",
-    "puppeteer": "^19.8.3"
+    "pg": "^8.10.0",
+    "pg-hstore": "^2.3.4",
+    "puppeteer": "^19.8.3",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.31.0",
+    "sequelize-typescript": "^2.1.5"
   }
 }
