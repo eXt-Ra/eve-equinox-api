@@ -2,24 +2,35 @@ import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import RedisStore from 'connect-redis';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import config from './config';
 
+// Passport
 import setupPassport from './passportSetup';
+
+// Middlewares
 import errorHandler from './middlewares/errorHandler';
 import fourOhFour from './middlewares/fourOhFour';
-import { redisClient } from './middlewares/redisClient';
+import authProtectedRoute from './middlewares/authProtectedRoute';
 
+// Databases
+import RedisStore from 'connect-redis';
+import { redisClient } from './middlewares/redisClient';
+import { setupSequelize } from './sequelize';
+
+
+//Routes
 import root from './routes/root';
 import auth from './routes/auth';
 import me from './routes/me';
 import profile from './routes/profile';
 import character from './routes/character';
 import logout from './routes/logout';
-import authProtectedRoute from './middlewares/authProtectedRoute';
-import { setupSequelize } from './sequelize';
+
+//Swagger
+import { setupSwagger } from './swagger';
+
 
 export const app = express();
 
@@ -41,7 +52,7 @@ app.use(function (req, res, next) {
     next();
   }
 });
-app.use(helmet());
+app.use(helmet.crossOriginOpenerPolicy({ policy: "unsafe-none" }));
 app.use(morgan('tiny'));
 
 app.use(
@@ -55,6 +66,7 @@ app.use(
 );
 setupSequelize();
 setupPassport(app);
+setupSwagger(app);
 
 // Apply routes before error handling
 app.use('/', root);

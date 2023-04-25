@@ -1,23 +1,71 @@
-//write the character route here and export it
+/**
+ * @swagger
+ * tags:
+ *   name: Character
+ *   description: Endpoints for character data
+ */
+
+
 import { Router } from 'express';
 import { getCharacter } from '../../controllers/character/getCharacter';
 import { searchCharacter } from '../../controllers/character/searchCharacter';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /character/{id}:
+ *   get:
+ *     summary: Retrieve a character by ID
+ *     description: Retrieve a specific character by providing the character's ID
+ *     tags:
+ *       - Character
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The character's ID
+ *     responses:
+ *       200:
+ *         description: A character object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CharacterProfile'
+ *       404:
+ *         description: Character not found
+ */
 router.get('/:id', getCharacter);
+
+/**
+ * @swagger
+ * /character/search/{search}:
+ *   get:
+ *     summary: Search characters by name
+ *     description: Retrieve a list of characters by providing a search string
+ *     tags:
+ *       - Character
+ *     parameters:
+ *       - in: path
+ *         name: search
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The search string to filter characters by name
+ *     responses:
+ *       200:
+ *         description: A list of characters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/CharacterProfile'
+ *       404:
+ *         description: No characters found
+ */
 router.get('/search/:search', searchCharacter);
-router.get('/search', (req, res) => {
-  return res.status(404).json({ message: 'Not found' });
-});
-
-// Wildcard route for unmatched paths
-router.use((req, res) => {
-  if (req.path.startsWith('/search')) {
-    return res.status(404).json({ message: 'Not found' });
-  }
-  return res.status(404).json({ message: 'Not found' });
-});
-
 
 export default router;

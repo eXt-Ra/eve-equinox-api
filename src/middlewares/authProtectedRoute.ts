@@ -9,6 +9,7 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
   const user: User | undefined = req.session?.passport?.user;
 
   if (!user) {
+    console.log("🔒 User not found, return an error response");
     res.cookie('eve-equinox-isConnected', false);
     return res.status(401).json({ message: "User not authenticated" });
   }

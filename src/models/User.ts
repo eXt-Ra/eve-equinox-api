@@ -9,7 +9,7 @@ import {
   HasMany,
   Index
 } from "sequelize-typescript";
-import { EsiProfile } from "./EsiProfile"; // Import the EsiProfile model, which you'll create next
+import { EsiProfile } from "./EsiProfile";
 
 @Table
 export class User extends Model {

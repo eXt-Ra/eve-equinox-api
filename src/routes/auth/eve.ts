@@ -1,8 +1,35 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: Endpoints for user authentication
+ */
+
 import express from 'express';
 import passport from 'passport';
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /auth/eve/login:
+ *   get:
+ *     summary: Redirect to Eve Online authentication page
+ *     description: Redirect the user to the Eve Online OAuth2 provider for authentication
+ *     tags:
+ *       - Authentication
+ *     parameters:
+ *       - in: query
+ *         name: returnTo
+ *         schema:
+ *           type: string
+ *         description: The URL to redirect to after successful authentication
+ *     responses:
+ *       302:
+ *         description: Redirect to the Eve Online authentication page
+ *       401:
+ *         description: Unauthorized
+ */
 router.get(`/login`, (req, res, next) => {
   const { returnTo } = req.query;
   const state = returnTo
@@ -18,6 +45,26 @@ router.get(`/login`, (req, res, next) => {
   authenticator(req, res, next)
 })
 
+/**
+ * @swagger
+ * /auth/eve/callback:
+ *   get:
+ *     summary: Eve Online authentication callback
+ *     description: Handle the callback from the Eve Online OAuth2 provider
+ *     tags:
+ *       - Authentication
+ *     parameters:
+ *       - in: query
+ *         name: state
+ *         schema:
+ *           type: string
+ *         description: The state parameter passed during authentication
+ *     responses:
+ *       302:
+ *         description: Redirect to the returnTo URL specified during authentication
+ *       401:
+ *         description: Unauthorized
+ */
 router.get('/callback', passport.authenticate('eveonline', { keepSessionInfo: true }), (req, res) => {
   const { state } = req.query;
   const decodedState = typeof state === 'string' ? JSON.parse(Buffer.from(state, 'base64').toString('utf-8')) : {};

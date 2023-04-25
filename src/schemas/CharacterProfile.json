@@ -1,0 +1,62 @@
+{
+  "$id": "CharacterProfile",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "The unique identifier for a character profile."
+    },
+    "birthday": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The character's birthday."
+    },
+    "bloodline_id": {
+      "type": "integer",
+      "description": "The bloodline ID of the character."
+    },
+    "corporation_id": {
+      "type": "integer",
+      "description": "The corporation ID the character belongs to."
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of the character."
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female"
+      ],
+      "description": "The gender of the character."
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the character."
+    },
+    "race_id": {
+      "type": "integer",
+      "description": "The race ID of the character."
+    },
+    "title": {
+      "type": "string",
+      "description": "The title of the character."
+    },
+    "portraitUrls": {
+      "$ref": "#/components/schemas/PortraitUrls"
+    }
+  },
+  "required": [
+    "id",
+    "birthday",
+    "bloodline_id",
+    "corporation_id",
+    "description",
+    "gender",
+    "name",
+    "race_id",
+    "title",
+    "portraitUrls"
+  ]
+}

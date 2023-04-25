@@ -1,0 +1,32 @@
+{
+  "$id": "PortraitUrls",
+  "type": "object",
+  "properties": {
+    "px64x64": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URL of the character's portrait at 64x64 pixels."
+    },
+    "px128x128": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URL of the character's portrait at 128x128 pixels."
+    },
+    "px256x256": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URL of the character's portrait at 256x256 pixels."
+    },
+    "px512x512": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URL of the character's portrait at 512x512 pixels."
+    }
+  },
+  "required": [
+    "px64x64",
+    "px128x128",
+    "px256x256",
+    "px512x512"
+  ]
+}
