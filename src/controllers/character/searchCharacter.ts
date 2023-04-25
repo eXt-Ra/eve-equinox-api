@@ -15,9 +15,13 @@ export const searchCharacter = async (req: Request, res: Response) => {
 
   const mCharProfile = getMainCharacterProfile(user.characters, user.mainCharacterId);
 
+  const searchQuery = req.params.search?.trim(); // Trim whitespace from search query
+
+  if (!searchQuery || searchQuery.length < 4) return res.status(400).json({ message: "Invalid search query" }); // Check if search query is null or under 4 characters
+
   try {
     const characterListResponse = await axios.get<CharacterList>(
-      `https://esi.evetech.net/latest/characters/${mCharProfile?.CharacterID}/search/?categories=character&datasource=tranquility&language=en&search=${req.params.search}&strict=false`,
+      `https://esi.evetech.net/latest/characters/${mCharProfile?.CharacterID}/search/?categories=character&datasource=tranquility&language=en&search=${searchQuery}&strict=false`,
       {
         headers: {
           Authorization: `Bearer ${mCharProfile?.accessToken}`,

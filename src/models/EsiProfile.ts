@@ -8,6 +8,7 @@ import {
   AutoIncrement,
   ForeignKey,
   BelongsTo,
+  Index
 } from "sequelize-typescript";
 import { DataTypes } from 'sequelize';
 import { User } from "./User";
@@ -19,7 +20,10 @@ export class EsiProfile extends Model {
   @Column
   id: number;
 
-  @Column({ unique: true })
+  @Index({
+    unique: true,
+  })
+  @Column
   CharacterID: number;
 
   @Column

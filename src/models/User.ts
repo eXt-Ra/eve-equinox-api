@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import {
   Table,
   Column,
@@ -7,8 +6,8 @@ import {
   PrimaryKey,
   AutoIncrement,
   CreatedAt,
-  UpdatedAt,
   HasMany,
+  Index
 } from "sequelize-typescript";
 import { EsiProfile } from "./EsiProfile"; // Import the EsiProfile model, which you'll create next
 
@@ -19,7 +18,10 @@ export class User extends Model {
   @Column
   id: number;
 
-  @Column({ unique: true })
+  @Index({
+    unique: true,
+  })
+  @Column()
   name: string;
 
   @CreatedAt
