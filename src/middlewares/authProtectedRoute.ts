@@ -9,7 +9,7 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
   const user: User | undefined = req.session?.passport?.user;
 
   if (!user) {
-    console.log("🔒 User not found, return an error response");
+    console.info("🔒 User not found, return an error response");
     res.cookie('eve-equinox-isConnected', false);
     return res.status(401).json({ message: "User not authenticated" });
   }
@@ -25,11 +25,11 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
 
     if (currentTimestamp < tokenExpiresOn) {
       // Token is valid, proceed to the next middleware or route
-      console.log("🔒 Token is valid, proceed to the next middleware or route");
+      console.info("🔒 Token is valid, proceed to the next middleware or route");
       next();
     } else {
       // Token is expired, attempt to refresh the token
-      console.log("🔒 Token is expired, attempt to refresh the token");
+      console.info("🔒 Token is expired, attempt to refresh the token");
       refresh.requestNewAccessToken(
         "eveonline",
         mCharProfile.refreshToken,

@@ -18,7 +18,16 @@
         "project": "./tsconfig.json"
     },
     "rules": {
-        "no-console": 1,
+        "no-console": [
+            "warn",
+            {
+                "allow": [
+                    "warn",
+                    "info",
+                    "error"
+                ]
+            }
+        ],
         "@typescript-eslint/ban-ts-comment": "off",
         "import/no-extraneous-dependencies": "off"
     },

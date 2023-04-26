@@ -25,13 +25,13 @@ const sequelize = new Sequelize(database ?? "", username ?? "", password, {
 export const setupSequelize = async () => {
   try {
     await sequelize.authenticate({ logging: false });
-    console.log("🚀 postGres connected 🚀");
+    console.info("🚀 postGres connected 🚀");
     await sequelize.sync({ alter: true, logging: false }).then(() => {
-      console.log("💡 postGres Database schema updated 💡");
+      console.info("💡 postGres Database schema updated 💡");
     }).catch((error) => {
       console.error("🔌 Error updating database schema:", error);
     });
-    console.log("💡 postGres models synchronized successfully 💡");
+    console.info("💡 postGres models synchronized successfully 💡");
   } catch (error) {
     console.error("🔌 Unable to connect to the database :", error);
   }
