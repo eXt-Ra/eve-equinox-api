@@ -1,15 +1,20 @@
 import { User } from "../interfaces/User";
 import { CharacterList } from "../interfaces/CharacterList";
-import db from "../models";
 import axios from "axios";
 import { EsiProfile } from "../interfaces/EsiProfile";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { pool } from "../database/pool";
+import { esiProfiles, users } from "../database/schema";
+import { eq } from "drizzle-orm";
 
 export const getCharacterIdWithName = async (characterName: string, esiProfile: EsiProfile | undefined): Promise<number | null> => {
   // Search for characterId in the database
-  const dbUser: User | null = await db.User.findOne({ where: { name: characterName } });
+  const db = drizzle(pool, { logger: true })
+  const dbUser = await db.select().from(users).where(eq(users.name, characterName))
+    .leftJoin(esiProfiles, eq(users.id, esiProfiles.userId)).limit(1);
 
-  if (dbUser)
-    return dbUser.id;
+  if (dbUser && dbUser.length > 0 && dbUser[0].EsiProfiles)
+    return dbUser[0].EsiProfiles.characterId;
 
   if (!esiProfile)
     return null;

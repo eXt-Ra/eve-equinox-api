@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1683642414791,
+      "tag": "0000_groovy_captain_cross",
+      "breakpoints": false
+    }
+  ]
+}

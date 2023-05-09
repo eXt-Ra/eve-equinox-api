@@ -31,7 +31,8 @@
     "prepare": "npx husky install",
     "bundle-analyzer": "parcel build src/server.ts --reporter @parcel/reporter-bundle-analyzer",
     "start:redis": "docker-compose up -d redis",
-    "migrate": "sequelize-cli db:migrate --config=src/config/sequelize-cli.js"
+    "migrate": "drizzle-kit up:pg",
+    "generate": "drizzle-kit generate:pg"
   },
   "husky": {
     "hooks": {
@@ -54,6 +55,7 @@
     "@types/passport": "^1.0.12",
     "@types/passport-oauth2": "^1.4.12",
     "@types/passport-oauth2-refresh": "^1.1.1",
+    "@types/pg": "^8.6.6",
     "@types/sequelize": "^4.28.14",
     "@types/supertest": "^2.0.12",
     "@types/swagger-jsdoc": "^6.0.1",
@@ -61,6 +63,7 @@
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
     "buffer": "^5.5.0",
+    "drizzle-kit": "^0.17.6",
     "eslint": "^8.37.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.8.0",
@@ -92,6 +95,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "drizzle-orm": "^0.23.4",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "helmet": "^6.0.1",

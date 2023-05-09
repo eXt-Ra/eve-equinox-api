@@ -17,7 +17,7 @@ import authProtectedRoute from './middlewares/authProtectedRoute';
 // Databases
 import RedisStore from 'connect-redis';
 import { redisClient } from './middlewares/redisClient';
-import { setupSequelize } from './sequelize';
+import { setupDrizzle } from './database/pool';
 
 
 //Routes
@@ -64,7 +64,8 @@ app.use(
     name: 'eve-equinox-session'
   }),
 );
-setupSequelize();
+// setupSequelize();
+setupDrizzle();
 setupPassport(app);
 setupSwagger(app);
 

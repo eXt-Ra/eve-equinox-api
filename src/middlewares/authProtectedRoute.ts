@@ -3,7 +3,10 @@ import axios, { AxiosError } from "axios";
 import refresh from "passport-oauth2-refresh";
 import { User } from "../interfaces/User";
 import { getCharacterESIProfile } from "../utils/getCharacterESIProfile";
-import db from "../models";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { pool } from "../database/pool";
+import { eq } from 'drizzle-orm';
+import { esiProfiles } from "../database/schema";
 
 const authProtectedRoute = async (req: Request, res: Response, next: NextFunction) => {
   const user: User | undefined = req.session?.passport?.user;
@@ -68,14 +71,19 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
               }
             });
 
-            const [dbEsiProfile] = await db.EsiProfile.findOrCreate({ where: { CharacterID } });
+            const db = drizzle(pool, { logger: true });
+            const dbEsiProfile = await db.select().from(esiProfiles).where(eq(esiProfiles.id, CharacterID));
 
             // Update the ESI profile if it exists
             if (dbEsiProfile) {
-              dbEsiProfile.accessToken = accessToken;
-              dbEsiProfile.refreshToken = refreshToken;
-              dbEsiProfile.ExpiresOn = ExpiresOn;
-              await dbEsiProfile.save();
+              await db.update(esiProfiles)
+                .set({
+                  accessToken,
+                  refreshToken,
+                  expiresOn: ExpiresOn,
+                  updatedAt: new Date().toISOString()
+                })
+                .where(eq(esiProfiles.id, CharacterID));
             }
 
             // Update session with new user object
