@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import axios, { AxiosError } from "axios";
 import refresh from "passport-oauth2-refresh";
 import { User } from "../interfaces/User";
-import { getMainCharacterProfile } from "../utils/getMainCharacterProfile";
+import { getCharacterESIProfile } from "../utils/getCharacterESIProfile";
 import db from "../models";
 
 const authProtectedRoute = async (req: Request, res: Response, next: NextFunction) => {
@@ -14,14 +14,14 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
     return res.status(401).json({ message: "User not authenticated" });
   }
 
-  const mCharProfile = getMainCharacterProfile(user.characters, user.mainCharacterId);
+  const esiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
 
-  if (!mCharProfile) return res.status(401).json({ message: "User not authenticated" });
+  if (!esiProfile) return res.status(401).json({ message: "User not authenticated" });
 
   try {
     // Verify token by making a request to a protected endpoint
     const currentTimestamp = Date.now();
-    const tokenExpiresOn = new Date(`${mCharProfile.ExpiresOn}Z`).getTime();
+    const tokenExpiresOn = new Date(`${esiProfile.ExpiresOn}Z`).getTime();
 
     if (currentTimestamp < tokenExpiresOn) {
       // Token is valid, proceed to the next middleware or route
@@ -32,7 +32,7 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
       console.info("🔒 Token is expired, attempt to refresh the token");
       refresh.requestNewAccessToken(
         "eveonline",
-        mCharProfile.refreshToken,
+        esiProfile.refreshToken,
         async (err, accessToken, refreshToken, params) => {
           if (err || !accessToken || !refreshToken || !params) {
             // Failed to refresh token, return an error response
@@ -59,6 +59,7 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
               ExpiresOn
             };
 
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             const userEsiProfiles = user.characters.map((esiProfile) => {
               if (esiProfile.CharacterID === newEsiProfile.CharacterID) {
                 return newEsiProfile;
@@ -67,14 +68,14 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
               }
             });
 
-            const [esiProfile] = await db.EsiProfile.findOrCreate({ where: { CharacterID } });
+            const [dbEsiProfile] = await db.EsiProfile.findOrCreate({ where: { CharacterID } });
 
             // Update the ESI profile if it exists
-            if (esiProfile) {
-              esiProfile.accessToken = accessToken;
-              esiProfile.refreshToken = refreshToken;
-              esiProfile.ExpiresOn = ExpiresOn;
-              await esiProfile.save();
+            if (dbEsiProfile) {
+              dbEsiProfile.accessToken = accessToken;
+              dbEsiProfile.refreshToken = refreshToken;
+              dbEsiProfile.ExpiresOn = ExpiresOn;
+              await dbEsiProfile.save();
             }
 
             // Update session with new user object
@@ -95,6 +96,7 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
+      console.error('axiosError: ', axiosError);
       // Return unknown error response
       res.cookie('eve-equinox-isConnected', false);
       return res.status(500).json({ message: "Unknown error" });

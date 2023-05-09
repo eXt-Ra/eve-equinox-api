@@ -26,12 +26,11 @@ export const setupSequelize = async () => {
   try {
     await sequelize.authenticate({ logging: false });
     console.info("🚀 postGres connected 🚀");
-    await sequelize.sync({ alter: true, logging: false }).then(() => {
+    await sequelize.sync({ logging: true }).then(() => {
       console.info("💡 postGres Database schema updated 💡");
     }).catch((error) => {
       console.error("🔌 Error updating database schema:", error);
     });
-    console.info("💡 postGres models synchronized successfully 💡");
   } catch (error) {
     console.error("🔌 Unable to connect to the database :", error);
   }

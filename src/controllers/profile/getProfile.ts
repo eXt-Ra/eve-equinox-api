@@ -4,7 +4,7 @@ import { CharacterProfile } from '../../interfaces/CharacterProfile';
 import { PortraitUrls } from '../../interfaces/PortraitUrls';
 import { Profile } from '../../interfaces/Profile';
 import { User } from '../../interfaces/User';
-import { getMainCharacterProfile } from '../../utils/getMainCharacterProfile';
+import { getCharacterESIProfile } from '../../utils/getCharacterESIProfile';
 import { EsiProfile } from '../../interfaces/EsiProfile';
 
 export const getProfile = async (req: Request, res: Response) => {
@@ -12,14 +12,14 @@ export const getProfile = async (req: Request, res: Response) => {
 
   if (!user) return res.status(401).json({ message: "User not authenticated" });
 
-  const mCharProfile = getMainCharacterProfile(user.characters, user.mainCharacterId);
+  const esiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
 
   const characterProfilesPromises = user.characters.map(async (character: EsiProfile) => {
     const characterProfilePromise = axios.get<CharacterProfile>(
       `https://esi.evetech.net/latest/characters/${character.CharacterID}?datasource=tranquility`,
       {
         headers: {
-          Authorization: `Bearer ${mCharProfile?.accessToken}`,
+          Authorization: `Bearer ${esiProfile?.accessToken}`,
         },
       }
     );
@@ -28,7 +28,7 @@ export const getProfile = async (req: Request, res: Response) => {
       `https://esi.evetech.net/latest/characters/${character.CharacterID}/portrait?datasource=tranquility`,
       {
         headers: {
-          Authorization: `Bearer ${mCharProfile?.accessToken}`,
+          Authorization: `Bearer ${esiProfile?.accessToken}`,
         },
       }
     );

@@ -2,18 +2,15 @@ import axios, { AxiosError } from "axios";
 import { Request, Response } from "express";
 import { CharacterProfile } from "../../interfaces/CharacterProfile";
 import { User } from "../../interfaces/User";
-import { getMainCharacterProfile } from "../../utils/getMainCharacterProfile";
-
-interface CharacterList {
-  character: number[];
-}
+import { getCharacterESIProfile } from "../../utils/getCharacterESIProfile";
+import { CharacterList } from "../../interfaces/CharacterList";
 
 export const searchCharacter = async (req: Request, res: Response) => {
   const user: User | undefined = req.session.passport?.user;
 
   if (!user) return res.status(401).json({ message: "User not authenticated" });
 
-  const mCharProfile = getMainCharacterProfile(user.characters, user.mainCharacterId);
+  const esiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
 
   const searchQuery = req.params.search?.trim(); // Trim whitespace from search query
 
@@ -21,10 +18,10 @@ export const searchCharacter = async (req: Request, res: Response) => {
 
   try {
     const characterListResponse = await axios.get<CharacterList>(
-      `https://esi.evetech.net/latest/characters/${mCharProfile?.CharacterID}/search/?categories=character&datasource=tranquility&language=en&search=${searchQuery}&strict=false`,
+      `https://esi.evetech.net/latest/characters/${esiProfile?.CharacterID}/search/?categories=character&datasource=tranquility&language=en&search=${searchQuery}&strict=false`,
       {
         headers: {
-          Authorization: `Bearer ${mCharProfile?.accessToken}`,
+          Authorization: `Bearer ${esiProfile?.accessToken}`,
         },
       }
     );
@@ -36,7 +33,7 @@ export const searchCharacter = async (req: Request, res: Response) => {
             `https://esi.evetech.net/latest/characters/${characterID}?datasource=tranquility`,
             {
               headers: {
-                Authorization: `Bearer ${mCharProfile?.accessToken}`,
+                Authorization: `Bearer ${esiProfile?.accessToken}`,
               },
             }
           );

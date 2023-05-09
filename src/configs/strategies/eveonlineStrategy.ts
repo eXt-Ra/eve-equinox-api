@@ -15,7 +15,7 @@ export function setupEveOnlineStrategy(passport: PassportStatic) {
       clientID: process.env.EVE_CLIENT_ID || '',
       clientSecret: process.env.EVE_CLIENT_SECRET || '',
       callbackURL: process.env.EVE_CALLBACK_URL || '',
-      scope: 'esi-wallet.read_character_wallet.v1 esi-wallet.read_corporation_wallet.v1 esi-wallet.read_corporation_wallets.v1 esi-search.search_structures.v1',
+      scope: 'esi-wallet.read_character_wallet.v1 esi-wallet.read_corporation_wallet.v1 esi-wallet.read_corporation_wallets.v1 esi-search.search_structures.v1 esi-skills.read_skillqueue.v1',
     },
     async (
       accessToken: string,

@@ -9,6 +9,7 @@
 import { Router } from 'express';
 import { getCharacter } from '../../controllers/character/getCharacter';
 import { searchCharacter } from '../../controllers/character/searchCharacter';
+import { getCharacterSkillQueue } from '../../controllers/character/getCharacterSkillQueue';
 
 const router = Router();
 
@@ -38,6 +39,12 @@ const router = Router();
  *         description: Character not found
  */
 router.get('/:id', getCharacter);
+
+
+
+router.get('/:characterId(\\d+)/skillqueue', getCharacterSkillQueue);
+
+router.get('/:characterName/skillqueue', getCharacterSkillQueue);
 
 /**
  * @swagger

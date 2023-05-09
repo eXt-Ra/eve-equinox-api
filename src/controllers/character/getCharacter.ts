@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { CharacterProfile } from "../../interfaces/CharacterProfile";
 import { PortraitUrls } from "../../interfaces/PortraitUrls";
 import { User } from "../../interfaces/User";
-import { getMainCharacterProfile } from "../../utils/getMainCharacterProfile";
+import { getCharacterESIProfile } from "../../utils/getCharacterESIProfile";
 
 export const getCharacter = async (req: Request, res: Response) => {
   const characterId = req.params.id;
@@ -11,14 +11,14 @@ export const getCharacter = async (req: Request, res: Response) => {
 
   if (!user) return res.status(401).json({ message: "User not authenticated" });
 
-  const mCharProfile = getMainCharacterProfile(user.characters, user.mainCharacterId);
+  const esiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
 
   const [characterResponse, portraitResponse] = await Promise.all([
     axios.get<CharacterProfile>(
       `https://esi.evetech.net/latest/characters/${characterId}?datasource=tranquility`,
       {
         headers: {
-          Authorization: `Bearer ${mCharProfile?.accessToken}`,
+          Authorization: `Bearer ${esiProfile?.accessToken}`,
         },
       }
     ),
@@ -26,7 +26,7 @@ export const getCharacter = async (req: Request, res: Response) => {
       `https://esi.evetech.net/latest/characters/${characterId}/portrait?datasource=tranquility`,
       {
         headers: {
-          Authorization: `Bearer ${mCharProfile?.accessToken}`,
+          Authorization: `Bearer ${esiProfile?.accessToken}`,
         },
       }
     ),
