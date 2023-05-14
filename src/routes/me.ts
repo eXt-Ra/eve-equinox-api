@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
-import { User } from '../interfaces/User';
+import { Account } from '../interfaces/Account';
 
 const router = express.Router();
 
 router.get('/', (req: Request, res: Response) => {
-  const user: User | undefined = req.session.passport?.user;
-  if (user) {
-    res.send({ ...user });
+  const account: Account | undefined = req.session.passport?.user;
+  if (account) {
+    res.send({ ...account });
   } else {
     res.sendStatus(401);
   }

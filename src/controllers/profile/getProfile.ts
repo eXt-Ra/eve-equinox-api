@@ -3,20 +3,19 @@ import axios from 'axios';
 import { CharacterProfile } from '../../interfaces/CharacterProfile';
 import { PortraitUrls } from '../../interfaces/PortraitUrls';
 import { Profile } from '../../interfaces/Profile';
-import { User } from '../../interfaces/User';
-import { getCharacterESIProfile } from '../../utils/getCharacterESIProfile';
-import { EsiProfile } from '../../interfaces/EsiProfile';
+import { Account } from '../../interfaces/Account';
+import { EsiProfile } from '../../database/schema';
 
 export const getProfile = async (req: Request, res: Response) => {
-  const user: User | undefined = req.session.passport?.user;
+  const account: Account | undefined = req.session.passport?.user;
 
-  if (!user) return res.status(401).json({ message: "User not authenticated" });
+  if (!account) return res.status(401).json({ message: "User not authenticated" });
+  if (!account.esiProfiles) return res.status(401).json({ message: "esiProfiles not found in account" });
+  if (!account.user.mainCharacterId) return res.status(401).json({ message: "mainCharacterId not found in account" });
 
-  const esiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
-
-  const characterProfilesPromises = user.characters.map(async (character: EsiProfile) => {
+  const characterProfilesPromises = account.esiProfiles.map(async (esiProfile: EsiProfile) => {
     const characterProfilePromise = axios.get<CharacterProfile>(
-      `https://esi.evetech.net/latest/characters/${character.CharacterID}?datasource=tranquility`,
+      `https://esi.evetech.net/latest/characters/${esiProfile.characterId}?datasource=tranquility`,
       {
         headers: {
           Authorization: `Bearer ${esiProfile?.accessToken}`,
@@ -25,7 +24,7 @@ export const getProfile = async (req: Request, res: Response) => {
     );
 
     const portraitPromise = axios.get<PortraitUrls>(
-      `https://esi.evetech.net/latest/characters/${character.CharacterID}/portrait?datasource=tranquility`,
+      `https://esi.evetech.net/latest/characters/${esiProfile.characterId}/portrait?datasource=tranquility`,
       {
         headers: {
           Authorization: `Bearer ${esiProfile?.accessToken}`,
@@ -37,7 +36,7 @@ export const getProfile = async (req: Request, res: Response) => {
 
     return {
       ...characterProfileResponse.data,
-      id: character.CharacterID,
+      id: esiProfile.characterId as number,
       portraitUrls: portraitResponse.data,
     };
   });

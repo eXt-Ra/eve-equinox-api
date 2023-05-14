@@ -1,12 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import session from 'express-session';
-import { User } from './../interfaces/User';
+import { Account } from '../interfaces/Account';
 
 declare module 'express-session' {
   interface SessionData {
     passport:
     | {
-      user: User;
+      user: Account;
     }
     | undefined;
     returnTo: string;

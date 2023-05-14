@@ -1,30 +1,45 @@
 import { NextFunction, Request, Response } from "express";
 import axios, { AxiosError } from "axios";
 import refresh from "passport-oauth2-refresh";
-import { User } from "../interfaces/User";
 import { getCharacterESIProfile } from "../utils/getCharacterESIProfile";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { pool } from "../database/pool";
 import { eq } from 'drizzle-orm';
 import { esiProfiles } from "../database/schema";
+import { Account } from "../interfaces/Account";
+import { EVEApiEsiProfile } from "../interfaces/EVEApiEsiProfile";
 
 const authProtectedRoute = async (req: Request, res: Response, next: NextFunction) => {
-  const user: User | undefined = req.session?.passport?.user;
+  const account: Account | undefined = req.session?.passport?.user;
 
-  if (!user) {
+  if (!account) {
     console.info("🔒 User not found, return an error response");
     res.cookie('eve-equinox-isConnected', false);
     return res.status(401).json({ message: "User not authenticated" });
   }
 
-  const esiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
+  if (!account.esiProfiles) {
+    console.info("🔒 esiProfile not found, return an error response");
+    res.cookie('eve-equinox-isConnected', false);
+    return res.status(401).json({ message: "User not authenticated" });
+  }
+
+  if (!account.user.mainCharacterId) {
+    console.info("🔒 mainCharacterId not found, return an error response");
+    res.cookie('eve-equinox-isConnected', false);
+    return res.status(401).json({ message: "User not authenticated" });
+  }
+
+  const esiProfile = getCharacterESIProfile(account.esiProfiles, account.user.mainCharacterId);
 
   if (!esiProfile) return res.status(401).json({ message: "User not authenticated" });
+  if (!esiProfile.accessToken) return res.status(401).json({ message: "accessToken not found in esiProfile" });
+  if (!esiProfile.refreshToken) return res.status(401).json({ message: "refreshToken not found in esiProfile" });
 
   try {
     // Verify token by making a request to a protected endpoint
     const currentTimestamp = Date.now();
-    const tokenExpiresOn = new Date(`${esiProfile.ExpiresOn}Z`).getTime();
+    const tokenExpiresOn = new Date(`${esiProfile.expiresOn}Z`).getTime();
 
     if (currentTimestamp < tokenExpiresOn) {
       // Token is valid, proceed to the next middleware or route
@@ -45,7 +60,7 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
 
           // Set the new access token in the request headers and retry the API request
           try {
-            const response = await axios.get(`https://esi.evetech.net/verify`, {
+            const response = await axios.get<EVEApiEsiProfile>(`https://esi.evetech.net/verify`, {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
               },
@@ -63,8 +78,8 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
             };
 
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            const userEsiProfiles = user.characters.map((esiProfile) => {
-              if (esiProfile.CharacterID === newEsiProfile.CharacterID) {
+            const userEsiProfiles = account.esiProfiles.map((esiProfile) => {
+              if (esiProfile.characterId === newEsiProfile.CharacterID) {
                 return newEsiProfile;
               } else {
                 return esiProfile;

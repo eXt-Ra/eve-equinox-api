@@ -1,16 +1,18 @@
 import axios, { AxiosError } from "axios";
 import { Request, Response } from "express";
 import { CharacterProfile } from "../../interfaces/CharacterProfile";
-import { User } from "../../interfaces/User";
 import { getCharacterESIProfile } from "../../utils/getCharacterESIProfile";
 import { CharacterList } from "../../interfaces/CharacterList";
+import { Account } from "../../interfaces/Account";
 
 export const searchCharacter = async (req: Request, res: Response) => {
-  const user: User | undefined = req.session.passport?.user;
+  const account: Account | undefined = req.session.passport?.user;
 
-  if (!user) return res.status(401).json({ message: "User not authenticated" });
+  if (!account) return res.status(401).json({ message: "User not authenticated" });
+  if (!account.esiProfiles) return res.status(401).json({ message: "esiProfiles not found in account" });
+  if (!account.user.mainCharacterId) return res.status(401).json({ message: "mainCharacterId not found in account" });
 
-  const esiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
+  const esiProfile = getCharacterESIProfile(account.esiProfiles, account?.user.mainCharacterId);
 
   const searchQuery = req.params.search?.trim(); // Trim whitespace from search query
 
@@ -18,7 +20,7 @@ export const searchCharacter = async (req: Request, res: Response) => {
 
   try {
     const characterListResponse = await axios.get<CharacterList>(
-      `https://esi.evetech.net/latest/characters/${esiProfile?.CharacterID}/search/?categories=character&datasource=tranquility&language=en&search=${searchQuery}&strict=false`,
+      `https://esi.evetech.net/latest/characters/${esiProfile?.characterId}/search/?categories=character&datasource=tranquility&language=en&search=${searchQuery}&strict=false`,
       {
         headers: {
           Authorization: `Bearer ${esiProfile?.accessToken}`,

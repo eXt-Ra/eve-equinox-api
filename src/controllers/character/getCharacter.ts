@@ -2,16 +2,18 @@ import axios from "axios";
 import { Request, Response } from "express";
 import { CharacterProfile } from "../../interfaces/CharacterProfile";
 import { PortraitUrls } from "../../interfaces/PortraitUrls";
-import { User } from "../../interfaces/User";
 import { getCharacterESIProfile } from "../../utils/getCharacterESIProfile";
+import { Account } from "../../interfaces/Account";
 
 export const getCharacter = async (req: Request, res: Response) => {
   const characterId = req.params.id;
-  const user: User | undefined = req.session.passport?.user;
+  const account: Account | undefined = req.session.passport?.user;
 
-  if (!user) return res.status(401).json({ message: "User not authenticated" });
+  if (!account) return res.status(401).json({ message: "User not authenticated" });
+  if (!account.esiProfiles) return res.status(401).json({ message: "esiProfiles not found in account" });
+  if (!account.user.mainCharacterId) return res.status(401).json({ message: "mainCharacterId not found in account" });
 
-  const esiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
+  const esiProfile = getCharacterESIProfile(account.esiProfiles, account?.user.mainCharacterId);
 
   const [characterResponse, portraitResponse] = await Promise.all([
     axios.get<CharacterProfile>(

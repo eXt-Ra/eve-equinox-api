@@ -1,4 +1,4 @@
-export interface EsiProfile {
+export interface EVEApiEsiProfile {
   CharacterID: number;
   CharacterName: string;
   accessToken: string;

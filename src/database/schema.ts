@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { InferModel } from "drizzle-orm";
-import { pgTable, pgEnum, pgSchema, AnyPgColumn, uniqueIndex, foreignKey, serial, integer, varchar, text, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, uniqueIndex, serial, integer, varchar, text, timestamp } from "drizzle-orm/pg-core"
 
 export const esiProfiles = pgTable("EsiProfiles", {
   id: serial('id').primaryKey(),
@@ -21,6 +21,8 @@ export const esiProfiles = pgTable("EsiProfiles", {
 
 
 export type NewEsiProfile = InferModel<typeof esiProfiles, 'insert'>;
+export type EsiProfile = InferModel<typeof esiProfiles>;
+
 
 export const users = pgTable("Users", {
   id: serial('id').primaryKey(),
@@ -36,3 +38,4 @@ export const users = pgTable("Users", {
   });
 
 export type NewUser = InferModel<typeof users, 'insert'>;
+export type User = InferModel<typeof users>;

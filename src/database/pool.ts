@@ -1,18 +1,22 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import { Pool } from 'pg';
+import { Pool, PoolConfig } from 'pg';
+import config from './config';
 
-export const pool = new Pool({
-  port: 5432,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DB,
-  host: process.env.POSTGRES_HOST,
-});
+interface Config {
+  development: PoolConfig;
+  test: PoolConfig;
+  production: PoolConfig;
+  [key: string]: PoolConfig;
+}
+
+const typedConfig: Config = config as Config;
+
+export const pool = new Pool(typedConfig[process.env.NODE_ENV || 'development'] as PoolConfig);
+export const db = drizzle(pool, { logger: true });
 
 export const setupDrizzle = async () => {
   try {
-    const db = drizzle(pool, { logger: true });
     // this will automatically run needed migrations on the database
     await migrate(db, { migrationsFolder: './src/migrations' }).then(() => {
       console.info("💡 postGres Database schema updated 💡");

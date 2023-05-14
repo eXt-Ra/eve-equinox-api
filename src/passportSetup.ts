@@ -1,16 +1,16 @@
 import passport from 'passport';
 import { setupEveOnlineStrategy } from './configs/strategies/eveonlineStrategy';
 import { Express } from 'express-serve-static-core';
-import { User } from './interfaces/User';
+import { Account } from './interfaces/Account';
 
 function setupPassport(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
-  passport.serializeUser((user, done) => {
-    done(null, user);
+  passport.serializeUser((account, done) => {
+    done(null, account);
   });
-  passport.deserializeUser((user: User, done) => {
-    done(null, user);
+  passport.deserializeUser((account: Account, done) => {
+    done(null, account);
   });
   setupEveOnlineStrategy(passport);
 }

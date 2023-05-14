@@ -14,5 +14,5 @@ redisClient.on('error', (error) => {
 
 // Handle Redis connection
 redisClient.on('connect', () => {
-  console.log('🚀 Redis connected 🚀');
+  console.info('🚀 Redis connected 🚀');
 });

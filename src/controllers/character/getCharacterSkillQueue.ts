@@ -1,8 +1,7 @@
 import axios from "axios";
 import { Request, Response } from "express";
-import { User } from "../../interfaces/User";
 import { getCharacterESIProfile } from "../../utils/getCharacterESIProfile";
-import { getCharacterIdWithName } from "../../utils/getCharacterIdWithName";
+import { Account } from "../../interfaces/Account";
 
 interface SkillQueueItem {
   finish_date: string;
@@ -19,22 +18,21 @@ export const getCharacterSkillQueue = async (req: Request, res: Response) => {
   let characterId = req.params.characterId;
   const characterName = req.params.characterName;
 
-  const user: User | undefined = req.session.passport?.user;
+  const account: Account | undefined = req.session.passport?.user;
 
-  if (!user) return res.status(401).json({ message: "User not authenticated" });
+  if (!account) return res.status(401).json({ message: "User not authenticated" });
 
   try {
 
-    if (!characterId && characterName) {
-      const mainEsiProfile = getCharacterESIProfile(user.characters, user.mainCharacterId);
-      const id = await getCharacterIdWithName(characterName, mainEsiProfile);
+    if (!characterId && characterName && account.user.mainCharacterId) {
+      const id = account.esiProfiles.find(esiProfile => esiProfile.characterName === characterName)?.characterId;
 
       if (!id) return res.status(404).json({ message: "Character not found" });
       characterId = id.toString();
     }
 
 
-    const esiProfile = getCharacterESIProfile(user.characters, Number(characterId));
+    const esiProfile = getCharacterESIProfile(account.esiProfiles, Number(characterId));
 
     const response = await axios.get<SkillQueueItem[]>(
       `https://esi.evetech.net/latest/characters/${characterId}/skillqueue/`,
