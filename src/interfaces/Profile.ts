@@ -1,5 +1,5 @@
-import { CharacterProfile } from './CharacterProfile';
+import { EVEApiCharacterProfile } from './EVEApiCharacterProfile';
 
 export interface Profile {
-  characterProfiles: CharacterProfile[];
+  characterProfiles: EVEApiCharacterProfile[];
 }

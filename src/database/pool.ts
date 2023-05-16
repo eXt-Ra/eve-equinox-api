@@ -18,11 +18,12 @@ export const db = drizzle(pool, { logger: true });
 export const setupDrizzle = async () => {
   try {
     // this will automatically run needed migrations on the database
-    await migrate(db, { migrationsFolder: './src/migrations' }).then(() => {
-      console.info("💡 postGres Database schema updated 💡");
-    }).catch((error) => {
-      console.error("🔌 Error updating database schema:", error);
-    });
+    // await migrate(db, { migrationsFolder: './src/migrations' }).then(() => {
+    //   console.info("💡 postGres Database schema updated 💡");
+    // }).catch((error) => {
+    //   console.error("🔌 Error updating database schema:", error);
+    // });
+
     console.info("🚀 postGres connected 🚀");
   } catch (error) {
     console.error("🔌 Unable to connect to the database :", error);

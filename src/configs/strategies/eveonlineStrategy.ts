@@ -31,7 +31,7 @@ export function setupEveOnlineStrategy(passport: PassportStatic) {
         );
 
         const { CharacterID, CharacterName, ExpiresOn } = response.data;
-        const user = await UserService.getUserByCharacterId(CharacterID);
+        const user = await UserService.getByCharacterId(CharacterID);
 
         try {
           if (!user) {
@@ -42,7 +42,7 @@ export function setupEveOnlineStrategy(passport: PassportStatic) {
               updatedAt: new Date().toISOString(),
             };
 
-            const insertedUser = await UserService.insertOrUpdateUser(newUser);
+            const insertedUser = await UserService.insertOrUpdate(newUser);
 
             const newEsiProfile: NewEsiProfile = {
               characterId: CharacterID,
@@ -55,7 +55,7 @@ export function setupEveOnlineStrategy(passport: PassportStatic) {
               updatedAt: new Date().toISOString(),
             };
 
-            const insertedEsiProfile = await EsiProfileService.insertOrUpdateEsiProfile(newEsiProfile);
+            const insertedEsiProfile = await EsiProfileService.insertOrUpdate(newEsiProfile);
 
             return done(null, {
               user: insertedUser,
@@ -75,8 +75,8 @@ export function setupEveOnlineStrategy(passport: PassportStatic) {
             };
 
             // Update the ESI profile if it exists or insert a new one
-            await EsiProfileService.insertOrUpdateEsiProfile(newEsiProfile);
-            const esiProfiles = await EsiProfileService.getEsiProfileByCharacterId(CharacterID);
+            await EsiProfileService.insertOrUpdate(newEsiProfile);
+            const esiProfiles = await EsiProfileService.getByCharacterId(CharacterID);
 
             if (!esiProfiles) {
               throw new Error('Unable to retrieve ESI profile');

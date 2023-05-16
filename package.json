@@ -25,7 +25,7 @@
     "prettier-watch:win32": "onchange \"src/**/*.ts\" -- prettier --write {{changed}}",
     "prettier-watch:darwin:linux": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "prettier-watch:default": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
-    "test": "jest --detectOpenHandles",
+    "test": "jest",
     "test:watch": "jest --watchAll",
     "test:coverage": "jest --verbose -w 5 --coverage",
     "prepare": "npx husky install",

@@ -1,7 +1,7 @@
-import { PortraitUrls } from "./PortraitUrls";
+import { EVEApiPortraitUrls } from "./EVEApiPortraitUrls";
 
-export interface CharacterProfile {
-  id: number;
+export interface EVEApiCharacterProfile {
+  // id: number;
   birthday: string;
   bloodline_id: number;
   corporation_id: number;
@@ -10,5 +10,5 @@ export interface CharacterProfile {
   name: string;
   race_id: number;
   title: string;
-  portraitUrls: PortraitUrls;
+  // portraitUrls: PortraitUrls;
 }

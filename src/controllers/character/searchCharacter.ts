@@ -1,8 +1,8 @@
 import axios, { AxiosError } from "axios";
 import { Request, Response } from "express";
-import { CharacterProfile } from "../../interfaces/CharacterProfile";
+import { EVEApiCharacterProfile } from "../../interfaces/EVEApiCharacterProfile";
 import { getCharacterESIProfile } from "../../utils/getCharacterESIProfile";
-import { CharacterList } from "../../interfaces/CharacterList";
+import { EVEApiCharacterList } from "../../interfaces/EVEApiCharacterList";
 import { Account } from "../../interfaces/Account";
 
 export const searchCharacter = async (req: Request, res: Response) => {
@@ -19,7 +19,7 @@ export const searchCharacter = async (req: Request, res: Response) => {
   if (!searchQuery || searchQuery.length < 4) return res.status(400).json({ message: "Invalid search query" }); // Check if search query is null or under 4 characters
 
   try {
-    const characterListResponse = await axios.get<CharacterList>(
+    const characterListResponse = await axios.get<EVEApiCharacterList>(
       `https://esi.evetech.net/latest/characters/${esiProfile?.characterId}/search/?categories=character&datasource=tranquility&language=en&search=${searchQuery}&strict=false`,
       {
         headers: {
@@ -31,7 +31,7 @@ export const searchCharacter = async (req: Request, res: Response) => {
     if (characterListResponse.data.character && characterListResponse.data.character.length > 0) {
       const characterProfilesPromises = characterListResponse.data.character.slice(0, 5).map(
         async (characterID: number) => {
-          return axios.get<CharacterProfile>(
+          return axios.get<EVEApiCharacterProfile>(
             `https://esi.evetech.net/latest/characters/${characterID}?datasource=tranquility`,
             {
               headers: {

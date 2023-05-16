@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 
 
 export class UserService {
-  static async getUserById(userId: number): Promise<User | null> {
+  static async getById(userId: number): Promise<User | null> {
     const dbUser = await db.select().from(users).where(eq(users.id, userId))
       .leftJoin(esiProfiles, eq(users.id, esiProfiles.userId));
 
@@ -19,7 +19,7 @@ export class UserService {
     return user;
   }
 
-  static async getUserByName(name: string): Promise<User | null> {
+  static async getByName(name: string): Promise<User | null> {
     const dbUser = await db.select().from(users).where(eq(users.name, name))
 
     if (!dbUser.length)
@@ -29,7 +29,7 @@ export class UserService {
   }
 
 
-  static async insertOrUpdateUser(user: NewUser): Promise<User> {
+  static async insertOrUpdate(user: NewUser): Promise<User> {
     const dbUser = await db.insert(users).values(user).onConflictDoUpdate({
       target: users.id,
       set: {
@@ -42,7 +42,7 @@ export class UserService {
     return dbUser[0];
   }
 
-  static async getUserByCharacterId(characterID: number): Promise<User | null> {
+  static async getByCharacterId(characterID: number): Promise<User | null> {
     const dbUser = await db.select().from(esiProfiles).where(eq(esiProfiles.characterId, characterID))
       .leftJoin(users, eq(users.id, esiProfiles.userId))
       .limit(1);
@@ -54,6 +54,10 @@ export class UserService {
       return null;
 
     return dbUser[0].Users;
+  }
+
+  static async deleteAll(): Promise<void> {
+    await db.delete(users)
   }
 
 }

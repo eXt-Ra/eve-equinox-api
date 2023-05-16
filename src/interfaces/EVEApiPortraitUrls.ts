@@ -1,5 +1,5 @@
 
-export interface PortraitUrls {
+export interface EVEApiPortraitUrls {
   px64x64: string;
   px128x128: string;
   px256x256: string;

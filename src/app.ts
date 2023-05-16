@@ -16,7 +16,7 @@ import authProtectedRoute from './middlewares/authProtectedRoute';
 
 // Databases
 import RedisStore from 'connect-redis';
-import { redisClient } from './middlewares/redisClient';
+import { getRedisClient } from './middlewares/redisClient';
 import { setupDrizzle } from './database/pool';
 
 
@@ -29,10 +29,10 @@ import character from './routes/character';
 import logout from './routes/logout';
 
 //Swagger
-import { setupSwagger } from './swagger';
+import { setupSwagger } from './swagger/swagger';
 
 
-export const app = express();
+const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -55,16 +55,21 @@ app.use(function (req, res, next) {
 app.use(helmet.crossOriginOpenerPolicy({ policy: "unsafe-none" }));
 app.use(morgan('tiny'));
 
+const sessionOption: session.SessionOptions = {
+  secret: process.env.SESSION_SECRET || 'default',
+  resave: false,
+  saveUninitialized: true,
+  name: 'eve-equinox-session'
+};
+
+if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'development') {
+  sessionOption.store = new RedisStore({ client: getRedisClient() });
+}
+
 app.use(
-  session({
-    store: new RedisStore({ client: redisClient }),
-    secret: process.env.SESSION_SECRET || 'default',
-    resave: false,
-    saveUninitialized: true,
-    name: 'eve-equinox-session'
-  }),
+  session(sessionOption),
 );
-// setupSequelize();
+
 setupDrizzle();
 setupPassport(app);
 setupSwagger(app);

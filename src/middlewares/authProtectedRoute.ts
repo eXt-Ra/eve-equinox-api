@@ -2,12 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import axios, { AxiosError } from "axios";
 import refresh from "passport-oauth2-refresh";
 import { getCharacterESIProfile } from "../utils/getCharacterESIProfile";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { pool } from "../database/pool";
-import { eq } from 'drizzle-orm';
-import { esiProfiles } from "../database/schema";
+import { NewEsiProfile } from "../database/schema";
 import { Account } from "../interfaces/Account";
 import { EVEApiEsiProfile } from "../interfaces/EVEApiEsiProfile";
+import { EsiProfileService } from "../services/esiprofile.service";
 
 const authProtectedRoute = async (req: Request, res: Response, next: NextFunction) => {
   const account: Account | undefined = req.session?.passport?.user;
@@ -70,36 +68,26 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
 
             // Update user's access token in session & database
             const newEsiProfile = {
-              CharacterID,
-              CharacterName,
-              accessToken,
-              refreshToken,
-              ExpiresOn
-            };
+              characterId: CharacterID,
+              characterName: CharacterName,
+              accessToken: accessToken,
+              refreshToken: refreshToken,
+              expiresOn: ExpiresOn,
+              userId: account.user.id,
+              updatedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
+            } as NewEsiProfile;
 
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            const userEsiProfiles = account.esiProfiles.map((esiProfile) => {
-              if (esiProfile.characterId === newEsiProfile.CharacterID) {
-                return newEsiProfile;
+            const updatedEsiProfile = await EsiProfileService.insertOrUpdate(newEsiProfile);
+
+            const userEsiProfiles = account.esiProfiles.map((eP) => {
+              if (eP.characterId === updatedEsiProfile.characterId) {
+                return updatedEsiProfile;
               } else {
-                return esiProfile;
+                return eP;
               }
             });
-
-            const db = drizzle(pool, { logger: true });
-            const dbEsiProfile = await db.select().from(esiProfiles).where(eq(esiProfiles.id, CharacterID));
-
-            // Update the ESI profile if it exists
-            if (dbEsiProfile) {
-              await db.update(esiProfiles)
-                .set({
-                  accessToken,
-                  refreshToken,
-                  expiresOn: ExpiresOn,
-                  updatedAt: new Date().toISOString()
-                })
-                .where(eq(esiProfiles.id, CharacterID));
-            }
 
             // Update session with new user object
             // @ts-ignore
@@ -109,6 +97,7 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
             // Token is valid after refresh, proceed to the next middleware or route
             next();
           } catch (error: unknown) {
+            console.error('error: ', error);
             // Return unknown error response after refreshing token
             res.cookie('eve-equinox-isConnected', false);
             return res.status(500).json({ message: "Unknown error after refreshing token" });
@@ -124,6 +113,9 @@ const authProtectedRoute = async (req: Request, res: Response, next: NextFunctio
       res.cookie('eve-equinox-isConnected', false);
       return res.status(500).json({ message: "Unknown error" });
     }
+
+    console.error('error: ', error);
+    return res.status(500).json({ message: "Unknown error" });
   }
 };
 

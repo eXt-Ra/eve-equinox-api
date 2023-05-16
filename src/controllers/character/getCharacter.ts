@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Request, Response } from "express";
-import { CharacterProfile } from "../../interfaces/CharacterProfile";
-import { PortraitUrls } from "../../interfaces/PortraitUrls";
+import { EVEApiCharacterProfile } from "../../interfaces/EVEApiCharacterProfile";
+import { EVEApiPortraitUrls } from "../../interfaces/EVEApiPortraitUrls";
 import { getCharacterESIProfile } from "../../utils/getCharacterESIProfile";
 import { Account } from "../../interfaces/Account";
 
@@ -16,7 +16,7 @@ export const getCharacter = async (req: Request, res: Response) => {
   const esiProfile = getCharacterESIProfile(account.esiProfiles, account?.user.mainCharacterId);
 
   const [characterResponse, portraitResponse] = await Promise.all([
-    axios.get<CharacterProfile>(
+    axios.get<EVEApiCharacterProfile>(
       `https://esi.evetech.net/latest/characters/${characterId}?datasource=tranquility`,
       {
         headers: {
@@ -24,7 +24,7 @@ export const getCharacter = async (req: Request, res: Response) => {
         },
       }
     ),
-    axios.get<PortraitUrls>(
+    axios.get<EVEApiPortraitUrls>(
       `https://esi.evetech.net/latest/characters/${characterId}/portrait?datasource=tranquility`,
       {
         headers: {
